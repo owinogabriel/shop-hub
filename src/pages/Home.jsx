@@ -1,5 +1,4 @@
 import { getProducts } from "../data/products";
-import { getProducts } from "../data/products";
 import ProductCard from "../components/ProductCard";
 
 export default function Home() {
