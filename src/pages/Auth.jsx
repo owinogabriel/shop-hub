@@ -1,10 +1,13 @@
 import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Auth() {
   // Controls whether user is signing up or logging in
   const [mode, setMode] = useState("signup");
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   // Get auth functions and current user from context
   const { signUp, user, login } = useContext(AuthContext);
@@ -20,12 +23,21 @@ export default function Auth() {
    * Handle form submission
    * - Calls signup or login depending on mode
    */
-  function onSubmit(data) {
+  async function onSubmit(data) {
+    setError(null);
+
+    let result;
+
     if (mode === "signup") {
-      signUp(data.email, data.password);
+      result = await signUp(data.email, data.password);
     } else {
-      // login expects (email, password)
-      login(data.email, data.password);
+      result = await login(data.email, data.password);
+    }
+
+    if (result?.success) {
+      navigate("/");
+    } else {
+      setError(result?.error || "Something went wrong");
     }
   }
 
@@ -33,7 +45,6 @@ export default function Auth() {
     <div className="page">
       <div className="container">
         <div className="auth-container">
-
           {/* Show logged-in user */}
           {user && <p>User logged in: {user.email}</p>}
 
@@ -43,10 +54,8 @@ export default function Auth() {
           </h1>
 
           {/* Authentication Form */}
-          <form
-            className="auth-form"
-            onSubmit={handleSubmit(onSubmit)}
-          >
+          <form className="auth-form" onSubmit={handleSubmit(onSubmit)}>
+            {error && <div className="error-message">{error}</div>}
             {/* EMAIL FIELD */}
             <div className="form-group">
               <label className="form-label">Email</label>
@@ -62,9 +71,7 @@ export default function Auth() {
               />
 
               {errors.email && (
-                <span className="form-error">
-                  {errors.email.message}
-                </span>
+                <span className="form-error">{errors.email.message}</span>
               )}
             </div>
 
@@ -93,9 +100,7 @@ export default function Auth() {
               />
 
               {errors.password && (
-                <span className="form-error">
-                  {errors.password.message}
-                </span>
+                <span className="form-error">{errors.password.message}</span>
               )}
             </div>
 
@@ -110,26 +115,19 @@ export default function Auth() {
             {mode === "signup" ? (
               <p>
                 Already have an account?{" "}
-                <span
-                  className="auth-link"
-                  onClick={() => setMode("login")}
-                >
+                <span className="auth-link" onClick={() => setMode("login")}>
                   Login
                 </span>
               </p>
             ) : (
               <p>
                 Don't have an account?{" "}
-                <span
-                  className="auth-link"
-                  onClick={() => setMode("signup")}
-                >
+                <span className="auth-link" onClick={() => setMode("signup")}>
                   Sign Up
                 </span>
               </p>
             )}
           </div>
-
         </div>
       </div>
     </div>
