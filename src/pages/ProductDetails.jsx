@@ -16,7 +16,7 @@ export default function ProductDetails() {
     }
 
     setProduct(foundProduct);
-  }, [id]);
+  }, [id, navigate]);
 
   if (!product) {
     return <h1>Loading...</h1>;
