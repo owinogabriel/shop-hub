@@ -1,6 +1,6 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { AuthContext } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Auth() {
@@ -10,7 +10,7 @@ export default function Auth() {
   const navigate = useNavigate();
 
   // Get auth functions and current user from context
-  const { signUp, user, login } = useContext(AuthContext);
+  const { signUp, user, login } = useAuth();
 
   // React Hook Form setup
   const {
